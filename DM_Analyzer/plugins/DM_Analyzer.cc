@@ -96,15 +96,17 @@ class DM_Analyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   TLorentzVector dm;
 
   //TH1D
-  TH1D *Njet;
+  //TH1D *Njet;
   TH1D *pdg;
   TH1D *status;
 
   //TH1F
-  TH1F *ptb1;
-  TH1F *ptb2;
-  TH1F *etab1;
-  TH1F *etab2;
+  //TH1F *ptb1;
+  //TH1F *ptb2;
+  //TH1F *etab1;
+  //TH1F *etab2;
+  //TH1F *phib1;
+  //TH1F *phib2;
 
   TH1F *phipt;
   TH1F *etaphi;
@@ -116,13 +118,18 @@ class DM_Analyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   TH1F *hspt;
 
   // Missing transverse energy
-  TH1F *metEnergy;
+  TH1F *metEt;
+  TH1F *metpT;
   TH1F *diffAng;
 
-  //third jet
-  TH1F *ptj3;
-  TH1F *etaj3;
-  TH1F *phij3;
+  //light jet
+  TH1F *phij1;
+  TH1F *phij2;
+  TH1F *etaj1;
+  TH1F *etaj2;
+  TH1F *ptj1;
+  TH1F *ptj2;
+  TH1F *deltaRj1j2;
 
   //bjet1 daughter
   TH1D *Ndoug;
@@ -174,15 +181,17 @@ DM_Analyzer::DM_Analyzer(const edm::ParameterSet& iConfig):
    edm::Service<TFileService> fs;
    
    //global 
-   Njet       = fs->make<TH1D>( "Njet"   , "Jet Multiplicity"     , 10  , -0.5 , 9.5 );
+   //Njet       = fs->make<TH1D>( "Njet"   , "Jet Multiplicity"     , 10  , -0.5 , 9.5 );
    pdg        = fs->make<TH1D>( "pdg"    , "pdgid in event"       , 30  , -30. , 30. );
    status     = fs->make<TH1D>( "status" , "status code of Event" , 100 , 0.   , 100 );
 
    //process kinematics
-   ptb1       = fs->make<TH1F>( "ptb1"  , "P_{T} of the leading b jet; Pt_{bjet1} [GeV/c]; Events"    , 100 , 0.  , 500. );
-   ptb2       = fs->make<TH1F>( "ptb2"  , "P_{T} of second leading b jet; Pt_{bjet2} [GeV/c]; Events" , 100 , 0.  , 500. );
-   etab1      = fs->make<TH1F>( "etab1" , "Eta of the leading b jet; #eta_{bjet1}; Events"            , 100 , -5. , 5.   );
-   etab2      = fs->make<TH1F>( "etab2" , "Eta of the second leading b jet; #eta_{bjet2} ; Events"    , 100 , -5. , 5.   );
+   //ptb1       = fs->make<TH1F>( "ptb1"  , "P_{T} of the leading b jet; Pt_{bjet1} [GeV/c]; Events"    , 100 , 0.  , 1000. );
+   //ptb2       = fs->make<TH1F>( "ptb2"  , "P_{T} of second leading b jet; Pt_{bjet2} [GeV/c]; Events" , 100 , 0.  , 1000. );
+   //etab1      = fs->make<TH1F>( "etab1" , "#eta of the leading b jet; #eta_{bjet1}; Events"            , 100 , -8. , 8.   );
+   //etab2      = fs->make<TH1F>( "etab2" , "#eta of the second leading b jet; #eta_{bjet2} ; Events"    , 100 , -8. , 8.   );
+   //phib1      = fs->make<TH1F>( "phib1" , "#phi of the leading b jet; #phi_{bjet1}; Events"            , 100 , -3.5 , 3.5   );
+   //phib2      = fs->make<TH1F>( "phib2" , "#phi of the second leading b jet; #phi_{bjet2} ; Events"    , 100 , -3.5 , 3.5   );
 
    phipt      = fs->make<TH1F>( "phipt"   , "P_{T} of Z'; Pt_{Z'} [GeV/c]; Events"      , 100 , 0.  , 500.  );
    etaphi     = fs->make<TH1F>( "etaphi"  , "Eta of Z'; #eta_{Z'} ; Events"             , 100 , -5. , 5.    );
@@ -193,18 +202,24 @@ DM_Analyzer::DM_Analyzer(const edm::ParameterSet& iConfig):
 
    hspt      = fs->make<TH1F>( "hspt"   , "P_{T} of hs; Pt_{hs} [GeV/c]; Events"      , 100 , 0.  , 500.  );
 
-   ptj3       = fs->make<TH1F>( "ptj3"  , "P_{T} of the third light jet; Pt_{jet3} [GeV/c]; Events"    , 100 , 0.  , 1000. );
-   etaj3      = fs->make<TH1F>( "etaj3" , "Eta of the third light jet; #eta_{jet3}; Events"            , 100 , -8. , 8.   );
-   phij3      = fs->make<TH1F>( "phij3" , "Phi of the third light jet; #phi_{jet3}; Events"            , 100 , -3.5, 3.5  );
+   // light jet
+   ptj1       = fs->make<TH1F>( "ptj1"  , "P_{T} of the first light jet; Pt_{jet1} [GeV/c]; Events"   , 100 , 0.  , 1000. );
+   ptj2       = fs->make<TH1F>( "ptj2"  , "P_{T} of the second light jet; Pt_{jet2} [GeV/c]; Events"  , 100 , 0.  , 1000. );
+   etaj1      = fs->make<TH1F>( "etaj1" , "Eta of the first light jet; #eta_{jet1}; Events"           , 100 , -8. , 8.   );
+   etaj2      = fs->make<TH1F>( "etaj2" , "Eta of the second light jet; #eta_{jet2}; Events"          , 100 , -8. , 8.   );
+   phij1      = fs->make<TH1F>( "phij1" , "Phi of the first light jet; #phi_{jet1}; Events"           , 100 , -3.5, 3.5  );
+   phij2      = fs->make<TH1F>( "phij2" , "Phi of the second light jet; #phi_{jet2}; Events"          , 100 , -3.5, 3.5  );
+   deltaRj1j2 = fs->make<TH1F>( "deltaRj1j2" , "#Delta R of the first and the second light jet; #Delta R {jet1, jet2}; Events" , 100 , 0. , 5.);
 
    //bjet1 daughter
-   Ndoug = fs->make<TH1D>( "Ndoug"   , "leading bjet number of daugther"     , 10  , -0.5 , 9.5 );
-   dougstatus = fs->make<TH1D>( "dougstatus"   , "leading bjet daughter status"     , 100  , -0.5 , 99.5 );
-   dougpdgid = fs->make<TH1D>( "dougpdgid"   , "leading bjet daughter pdgid"     , 10  , -0.5 , 9.5 );
+   //Ndoug = fs->make<TH1D>( "Ndoug"   , "leading bjet number of daugther"     , 10  , -0.5 , 9.5 );
+   //dougstatus = fs->make<TH1D>( "dougstatus"   , "leading bjet daughter status"     , 100  , -0.5 , 99.5 );
+   //dougpdgid = fs->make<TH1D>( "dougpdgid"   , "leading bjet daughter pdgid"     , 10  , -0.5 , 9.5 );
 
    // MET
-   metEnergy  = fs->make<TH1F>(  "metEnergy"  , "energy of the missing transverse energy; Energy [GeV]; Events", 100 , 0., 1000. );
-   diffAng    = fs->make<TH1F>(  "diffAng"    , "Angle difference between MET and 1st leading jet; #Delta#phi; Events", 100, -3.5, 3.5 );
+   metEt    = fs->make<TH1F>(  "metEt"    , "Missing transverse energy; Energy [GeV]; Events", 100 , 0., 1000. );
+   metpT    = fs->make<TH1F>(  "metpT"    , "P_{T} of the missing transverse energy; Pt_{MET} [GeV/c]; Events", 100 , 0., 1000. );
+   diffAng  = fs->make<TH1F>(  "diffAng"  , "Angle difference between MET and 1st leading jet; #Delta#phi; Events", 100, -3.5, 3.5 );
 
    //Tree
    a = fs->make<TTree>("a","Acceptance");
@@ -258,9 +273,9 @@ DM_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    //need to declare a vector storing reco::candidates
    //const reco::Candidate *bjet = 0;
-   std::vector<reco::GenParticle> bjets;
+   //std::vector<reco::GenParticle> bjets;
    std::vector<reco::GenParticle> thirdjet;
-   bjets.clear();
+   //bjets.clear();
    thirdjet.clear();
 
    //TLorentzvector
@@ -288,17 +303,22 @@ DM_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        pdg->Fill(p.pdgId());
        status->Fill(p.status());  
 
+
+       //if( abs(p.pdgId()) <= 4 || abs(p.pdgId()) == 21 ) cout << "Which particle: " << abs(p.pdgId()) << ", status: " << p.status() << endl;
+       //if( abs(p.pdgId()) <= 4 ) cout <<  "status: " << p.status() << ", pT: " << p.pt() << endl;
+       //if( abs(p.pdgId()) == 21 ) cout << "status: " << p.status() << ", pT: " << p.pt() << endl;
+
        //jet multiplicity
-       if ( abs(p.pdgId()) <= 4 && ( p.status() > 70 && p.status() < 80 )) { 
+       if ( (abs(p.pdgId()) <= 4 || abs(p.pdgId() == 21 )) && ( p.status() > 70 && p.status() < 80 ) ) { 
            //ptj3->Fill(p.pt(),unitxsec); etaj3->Fill(p.rapidity(),unitxsec);
            thirdjet.push_back(p);
-           counter++;
+           //counter++;
        }
 
        //bjets
-       if ( abs(p.pdgId()) == 5 && ( p.status() > 70 && p.status() < 80 ) ) { 
-           bjets.push_back(p); 
-       }
+       //if ( abs(p.pdgId()) == 5 && ( p.status() > 70 && p.status() < 80 ) ) { 
+       //    bjets.push_back(p); 
+       //}
 
        //if( abs(p.pdgId()) > 50 && abs(p.pdgId()) < 60 ) std::cout << "Particle ID: " << p.pdgId() << ", number of daughters: " << p.numberOfDaughters() << std::endl;
 
@@ -323,17 +343,18 @@ DM_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      }
 
 
-   Njet->Fill(counter);
+   //Njet->Fill(counter);
    
-   std::vector<reco::GenParticle> Sorted_bjets = IndexByPt(bjets);
+   //std::vector<reco::GenParticle> Sorted_bjets = IndexByPt(bjets);
    std::vector<reco::GenParticle> Sorted_thirdjet = IndexByPt(thirdjet);
    
    for( size_t j=0 ; j < var2->size() ; ++j )
    {
        const pat::MET &MeT = (*var2)[j];
 
-       metEnergy->Fill(MeT.energy(),unitxsec);
-
+       metEt->Fill(MeT.energy(),unitxsec);
+       metpT->Fill(MeT.pt(),unitxsec);
+       
        if( Sorted_thirdjet.size() > 0 ) {
 	   float dphi = Sorted_thirdjet[0].phi() - MeT.phi();
 	   if( dphi >= M_PI ) dphi -= 2.*M_PI;
@@ -343,16 +364,32 @@ DM_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        //cout << "Missing transverse energy: " << MeT.energy() << endl;
    }
 
+   /*
    if (Sorted_bjets.size() > 0){
      ptb1->Fill(Sorted_bjets[0].pt(),unitxsec);
      etab1->Fill(Sorted_bjets[0].rapidity(),unitxsec);
+     phib1->Fill(Sorted_bjets[0].phi(),unitxsec);
      ptb2->Fill(Sorted_bjets[1].pt(),unitxsec);
      etab2->Fill(Sorted_bjets[1].rapidity(),unitxsec);
+     phib2->Fill(Sorted_bjets[1].phi(),unitxsec);
    }
-
+   */
    if (Sorted_thirdjet.size() > 0 ){
-     ptj3->Fill(Sorted_thirdjet[0].pt(),unitxsec); etaj3->Fill(Sorted_thirdjet[0].rapidity(),unitxsec);
-     phij3->Fill(Sorted_thirdjet[0].phi(),unitxsec);
+     ptj1->Fill(Sorted_thirdjet[0].pt(),unitxsec); 
+     ptj2->Fill(Sorted_thirdjet[1].pt(),unitxsec); 
+     etaj1->Fill(Sorted_thirdjet[0].rapidity(),unitxsec);
+     etaj2->Fill(Sorted_thirdjet[1].rapidity(),unitxsec);
+     phij1->Fill(Sorted_thirdjet[0].phi(),unitxsec);
+     phij2->Fill(Sorted_thirdjet[1].phi(),unitxsec);
+
+     if( Sorted_thirdjet[0].pt() != 0 && Sorted_thirdjet[1].pt() != 0 ) {
+	float dphi = Sorted_thirdjet[0].phi() - Sorted_thirdjet[1].phi();
+	if( dphi >= M_PI ) dphi -= 2.*M_PI;
+	if( dphi < -M_PI ) dphi += 2.*M_PI;
+	float deta = Sorted_thirdjet[0].rapidity() - Sorted_thirdjet[1].rapidity();
+        float dR = sqrt(pow(dphi,2)+pow(deta,2));
+        deltaRj1j2->Fill(dR,unitxsec);
+     }
    }
    
 

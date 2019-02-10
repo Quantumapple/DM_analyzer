@@ -46,6 +46,7 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/PatCandidates/interface/MET.h" 
+#include "DataFormats/PatCandidates/interface/Jet.h"
 
 
 //
@@ -86,6 +87,8 @@ class DM_Analyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   //InputTag
   edm::InputTag genParticleTag_;
   edm::InputTag metTag_;
+  edm::InputTag jetTag_;
+  edm::InputTag genJetTag_;
 
   //vector
   //std::vector<reco::GenParticle> bjets;
@@ -96,7 +99,7 @@ class DM_Analyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   TLorentzVector dm;
 
   //TH1D
-  //TH1D *Njet;
+  TH1D *Njet;
   TH1D *pdg;
   TH1D *status;
 
@@ -168,7 +171,9 @@ class DM_Analyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 //
 DM_Analyzer::DM_Analyzer(const edm::ParameterSet& iConfig):
   genParticleTag_(iConfig.getUntrackedParameter<edm::InputTag>("genParticleTag")),
-  metTag_(iConfig.getUntrackedParameter<edm::InputTag>("metTag"))
+  metTag_(iConfig.getUntrackedParameter<edm::InputTag>("metTag")),
+  jetTag_(iConfig.getUntrackedParameter<edm::InputTag>("jetTag")),
+  genJetTag__(iConfig.getUntrackedParameter<edm::InputTag>("genJetTag"))
 
 {
    //now do what ever initialization is needed
@@ -177,6 +182,8 @@ DM_Analyzer::DM_Analyzer(const edm::ParameterSet& iConfig):
    //Token
    tok_gen = consumes<reco::GenParticleCollection>(genParticleTag_); // bridge python <-> c++
    tok_met = consumes<pat::METCollection>(metTag_); // bridge python <-> c++
+   tok_jet = consumes<pat::JetCollection>(jetTag_);
+   tok_genjet = consumes<pat::GenJetCollection>(genjetTag_);
 
    edm::Service<TFileService> fs;
    
@@ -283,19 +290,20 @@ DM_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    dm.SetPxPyPzE(0.,0.,0.,0.);
 
    // CMSSW service leave this!!
-   edm::Handle<GenParticleCollection> var1;
-   edm::Handle<METCollection> var2;
-   //iEvent.getByLabel(genParticleTag_,var1);
-   iEvent.getByToken(tok_gen, var1);
-   iEvent.getByToken(tok_met, var2);
+   edm::Handle<GenParticleCollection> genpart;
+   edm::Handle<METCollection> met;
+   edm::Handle<JetCollection> jet;
+   edm::Handle<GenJetCollection> genjet;
+   
+  
+   iEvent.getByToken(tok_gen, genpart);
+   iEvent.getByToken(tok_met, met);
+   iEvent.getByToken(tok_jet, jet);
+   iEvent.getByToken(tok_genjet, genjet);
 
-   //std::cout << std::endl;
-   //std::cout << "Size of variable: " << var1->size() << std::endl;
-   //std::cout << "======================================" << std::endl;
-
-   for( size_t i=0 ; i < var1->size() ; ++i )
+   for( size_t i=0 ; i < genpart->size() ; ++i )
      {
-       const reco::GenParticle &p = (*var1)[i];
+       const reco::GenParticle &p = (*genpart)[i];
        const reco::Candidate *mom = p.mother();
 
        dm.SetPxPyPzE(p.px(),p.py(),p.pz(),p.energy());
@@ -303,17 +311,6 @@ DM_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        pdg->Fill(p.pdgId());
        status->Fill(p.status());  
 
-
-       //if( abs(p.pdgId()) <= 4 || abs(p.pdgId()) == 21 ) cout << "Which particle: " << abs(p.pdgId()) << ", status: " << p.status() << endl;
-       //if( abs(p.pdgId()) <= 4 ) cout <<  "status: " << p.status() << ", pT: " << p.pt() << endl;
-       //if( abs(p.pdgId()) == 21 ) cout << "status: " << p.status() << ", pT: " << p.pt() << endl;
-
-       //jet multiplicity
-       if ( (abs(p.pdgId()) <= 4 || abs(p.pdgId() == 21 )) && ( p.status() > 70 && p.status() < 80 ) ) { 
-           //ptj3->Fill(p.pt(),unitxsec); etaj3->Fill(p.rapidity(),unitxsec);
-           thirdjet.push_back(p);
-           //counter++;
-       }
 
        //bjets
        //if ( abs(p.pdgId()) == 5 && ( p.status() > 70 && p.status() < 80 ) ) { 
@@ -329,16 +326,16 @@ DM_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
            chichimass->Fill(dmSystem.M(),unitxsec);
        }
        //mediator
-       if ( p.status() == 22 && mom->status() == 21 && abs(p.pdgId())==55 )
+       if ( p.status() == 22 && abs(p.pdgId())==55 )
        {
            phipt->Fill(p.pt(),unitxsec);
            etaphi->Fill(p.rapidity(),unitxsec);
            phimass->Fill(p.mass(),unitxsec);
        }
        //dark higgs
-       if ( abs(p.pdgId())==54 ) {
-	 
-       }
+       //if ( abs(p.pdgId())==54 ) {
+       
+       //}
        
      }
 
@@ -348,7 +345,8 @@ DM_Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    //std::vector<reco::GenParticle> Sorted_bjets = IndexByPt(bjets);
    std::vector<reco::GenParticle> Sorted_thirdjet = IndexByPt(thirdjet);
    
-   for( size_t j=0 ; j < var2->size() ; ++j )
+   //
+   for( size_t j=0 ; j < met->size() ; ++j )
    {
        const pat::MET &MeT = (*var2)[j];
 

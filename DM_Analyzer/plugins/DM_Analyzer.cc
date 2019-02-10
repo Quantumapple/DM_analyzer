@@ -31,7 +31,7 @@ DM_Analyzer::DM_Analyzer(const edm::ParameterSet& iConfig):
   genParticleTag_(iConfig.getUntrackedParameter<edm::InputTag>("genParticleTag")),
   metTag_(iConfig.getUntrackedParameter<edm::InputTag>("metTag")),
   jetTag_(iConfig.getUntrackedParameter<edm::InputTag>("jetTag")),
-  genJetTag__(iConfig.getUntrackedParameter<edm::InputTag>("genJetTag"))
+  genJetTag_(iConfig.getUntrackedParameter<edm::InputTag>("genJetTag"))
 
 {
    //now do what ever initialization is needed
@@ -63,9 +63,9 @@ DM_Analyzer::DM_Analyzer(const edm::ParameterSet& iConfig):
    metPt = fs->make<TH1F>( "metPt"   , "MET pt"      , 100 , 0.  , 500.  );
 
    //Tree
-   a = fs->make<TTree>("a","Acceptance");
-   a->Branch("met",met,"met[7]/D");
-   a->Branch("acc",acc,"acc[7]/F");
+   tree = fs->make<TTree>("tree","Acceptance");
+   tree->Branch("met",met,"met[7]/D");
+   tree->Branch("acc",acc,"acc[7]/F");
 
    //variable initialization
    //bjets.clear();

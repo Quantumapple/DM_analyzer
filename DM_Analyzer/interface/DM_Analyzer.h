@@ -62,18 +62,15 @@ class DM_Analyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
   //Token
   edm::EDGetTokenT<reco::GenParticleCollection> tok_gen; // object interacts with python <-> c++
-  //edm::EDGetTokenT<pat::MET> tok_met; // object interacts with python <-> c++
   edm::EDGetTokenT<pat::METCollection> tok_met; // object interacts with python <-> c++
+  edm::EDGetTokenT<pat::JetCollection> tok_jet;
+  edm::EDGetTokenT<pat::GenJetCollection>  tok_genjet;
 
   //InputTag
   edm::InputTag genParticleTag_;
   edm::InputTag metTag_;
   edm::InputTag jetTag_;
   edm::InputTag genJetTag_;
-
-  //vector
-  //std::vector<reco::GenParticle> bjets;
-  //std::vector<reco::GenParticle> thirdjet;
 
   //LorentzVector
   TLorentzVector dmSystem;
@@ -84,41 +81,18 @@ class DM_Analyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   TH1D *pdg;
   TH1D *status;
 
-  //TH1F
-  //TH1F *ptb1;
-  //TH1F *ptb2;
-  //TH1F *etab1;
-  //TH1F *etab2;
-  //TH1F *phib1;
-  //TH1F *phib2;
+  TH1F *ZpPt;
+  TH1F *ZpPhi;
+  TH1F *ZpMass;
 
-  TH1F *phipt;
-  TH1F *etaphi;
-  TH1F *phimass;
+  TH1F *DmPt;
+  TH1F *DmMass;
 
-  TH1F *chichipt;
-  TH1F *chichimass;
-
-  TH1F *hspt;
+  TH1F *hsPt;
+  TH1F *hsMass;
 
   // Missing transverse energy
-  TH1F *metEt;
-  TH1F *metpT;
-  TH1F *diffAng;
-
-  //light jet
-  TH1F *phij1;
-  TH1F *phij2;
-  TH1F *etaj1;
-  TH1F *etaj2;
-  TH1F *ptj1;
-  TH1F *ptj2;
-  TH1F *deltaRj1j2;
-
-  //bjet1 daughter
-  TH1D *Ndoug;
-  TH1D *dougstatus;
-  TH1D *dougpdgid;
+  TH1F *metPt;
 
   //unit cross section pb
   float unitxsec=1;
@@ -126,7 +100,7 @@ class DM_Analyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   //Tree for acceptance
   Double_t met[7];
   Float_t acc[7];
-  TTree *a;
+  TTree *tree;
 
   //variable
   double countEvent = 0;

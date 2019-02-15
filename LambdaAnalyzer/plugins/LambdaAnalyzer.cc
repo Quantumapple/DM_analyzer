@@ -62,7 +62,7 @@ LambdaAnalyzer::LambdaAnalyzer(const edm::ParameterSet& iConfig):
 
    std::ifstream histFile(HistFile);
    if(!histFile.is_open()) {
-     throw cms::Exception("DMbb Analyzer", HistFile + " file not found");
+     throw cms::Exception("Analyzer", HistFile + " file not found");
    }
    while(histFile >> name >> title >> nbins >> min >> max >> opt) {
      if(name.find('#')==std::string::npos) {
@@ -136,12 +136,14 @@ LambdaAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
    // Jet
-
    std::vector<pat::Jet> JetsVect = theJetAnalyzer->FillJetVector(iEvent);
    nJets = JetsVect.size();
    pat::MET MET = theJetAnalyzer->FillMetVector(iEvent);
-
-
+   
+   for(unsigned int i = 0; i < JetsVect.size(); i++){
+     std::cout<<"jet pt = "<<JetsVect[i].pt()<<std::endl;
+   }
+     
 }
 
 

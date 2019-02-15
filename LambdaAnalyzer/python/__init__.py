@@ -1,3 +1,3 @@
 #Automatically created by SCRAM
 import os
-__path__.append(os.path.dirname(os.path.abspath(__file__).rsplit('/edmAna/LambdaAnalyzer/',1)[0])+'/cfipython/slc6_amd64_gcc530/edmAna/LambdaAnalyzer')
+__path__.append(os.path.dirname(os.path.abspath(__file__).rsplit('/DM_analyzer/LambdaAnalyzer/',1)[0])+'/cfipython/slc6_amd64_gcc530/DM_analyzer/LambdaAnalyzer')

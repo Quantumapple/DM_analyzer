@@ -20,22 +20,27 @@ process.source = cms.Source("PoolSource",
     )
 )
 
-process.ntuple = cms.EDAnalyzer("LambdaAnalyzer",
+process.lamb = cms.EDAnalyzer("LambdaAnalyzer",
                                 genSet = cms.PSet(
                                                   genProduct = cms.InputTag('generator'),
                                                   lheProduct = cms.InputTag('externalLHEProducer'),
                                                   genParticles = cms.InputTag('prunedGenParticles'),
+                                                  pdgId = cms.vint32(1, 2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 16, 21, 23, 24, 25, 52, 55, 54), #52 DM; 55 Zp; 54 hs 
                                                   ),
                                 jetSet = cms.PSet(
                                                   vertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
-                                                  jets = cms.untracked.InputTag('slimmedJets'),
+                                                  jets = cms.InputTag('slimmedJets'),
                                                   met = cms.InputTag('slimmedMETs'),
                                                   ),
-                                fatJetSet = cms.PSet(
-                                                  jets = cms.InputTag('slimmedJetsAK8'),
-                                                  ),
-                                histFile = cms.string('%s/src/edmAna/LambdaAnayzer/data/HistList.dat' % os.environ['CMSSW_BASE']),
+                                #fatJetSet = cms.PSet(
+                                #                  jets = cms.InputTag('slimmedJetsAK8'),
+                                #                  ),
+                                histFile = cms.string('%s/src/DM_analyzer/LambdaAnalyzer/data/HistList.dat' % os.environ['CMSSW_BASE']),
                                 )
+process.TFileService = cms.Service("TFileService",
+                                    fileName = cms.string("histo.root"),
+                                    closeFileFast = cms.untracked.bool(True)
+                                    )
 
 
-process.p = cms.Path(process.ntuple)
+process.p = cms.Path(process.lamb)

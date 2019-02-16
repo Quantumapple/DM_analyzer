@@ -32,7 +32,7 @@
 LambdaAnalyzer::LambdaAnalyzer(const edm::ParameterSet& iConfig):
   GenPSet(iConfig.getParameter<edm::ParameterSet>("genSet")),
   JetPSet(iConfig.getParameter<edm::ParameterSet>("jetSet")),
-  FatJetPSet(iConfig.getParameter<edm::ParameterSet>("fastJetSet")),
+  //FatJetPSet(iConfig.getParameter<edm::ParameterSet>("fastJetSet")),
   HistFile(iConfig.getParameter<std::string>("histFile"))
 {
    //now do what ever initialization is needed

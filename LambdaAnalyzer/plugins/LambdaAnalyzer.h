@@ -67,7 +67,7 @@ class LambdaAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   // ----------member data ---------------------------
   edm::ParameterSet GenPSet;
   edm::ParameterSet JetPSet;
-  edm::ParameterSet FatJetPSet;
+  //edm::ParameterSet FatJetPSet;
 
   GenAnalyzer* theGenAnalyzer;
   JetAnalyzer* theJetAnalyzer;

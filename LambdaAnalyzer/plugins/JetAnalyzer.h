@@ -34,6 +34,7 @@ class JetAnalyzer {
     public:
         JetAnalyzer(edm::ParameterSet&, edm::ConsumesCollector&&);
         ~JetAnalyzer();
+	virtual std::vector<reco::GenJet> FillGenJetVector(const edm::Event&);
         virtual std::vector<pat::Jet> FillJetVector(const edm::Event&);
         virtual void CleanJetsFromMuons(std::vector<pat::Jet>&, std::vector<pat::Muon>&, float);
         virtual void CleanJetsFromElectrons(std::vector<pat::Jet>&, std::vector<pat::Electron>&, float);
@@ -44,6 +45,7 @@ class JetAnalyzer {
         edm::EDGetTokenT<std::vector<pat::Jet> > JetToken;
         edm::EDGetTokenT<std::vector<pat::MET> > MetToken;
 	edm::EDGetTokenT<reco::VertexCollection> VertexToken;
+	edm::EDGetTokenT<std::vector<reco::GenJet> > GenJetToken;
 
 };
 

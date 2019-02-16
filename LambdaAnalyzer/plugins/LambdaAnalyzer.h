@@ -3,6 +3,8 @@
 
 // system include files                                                                                                                    
 #include <memory>
+#include <vector>
+#include <algorithm>
 
 // user include files                                                                                                                                                  
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -41,6 +43,9 @@
 
 #include "GenAnalyzer.h"
 #include "JetAnalyzer.h"
+#include "MuonAnalyzer.h"
+#include "ElectronAnalyzer.h"
+
 
 //                                                                                                                                                                            
 // class declaration
@@ -60,17 +65,29 @@ class LambdaAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
 
  private:
+  virtual float deltaPhi(float,float);
+  virtual float deltaR(float,float,float,float);
   virtual void beginJob() override;
   virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
   virtual void endJob() override;
 
   // ----------member data ---------------------------
+  std::vector<reco::GenParticle> IndexByPt(std::vector<reco::GenParticle> vector);
+
+  struct comp {
+    bool operator() (reco::GenParticle& i,reco::GenParticle& j) { return ( (i.pt()) > (j.pt()) ); } // sort in descending order 
+  };
+
   edm::ParameterSet GenPSet;
   edm::ParameterSet JetPSet;
+  edm::ParameterSet ElectronPSet;
+  edm::ParameterSet MuonPSet;
   //edm::ParameterSet FatJetPSet;
 
   GenAnalyzer* theGenAnalyzer;
   JetAnalyzer* theJetAnalyzer;
+  ElectronAnalyzer* theElectronAnalyzer;
+  MuonAnalyzer* theMuonAnalyzer;
 
   std::string HistFile;
   std::map<std::string, TH1F*> Hist;
@@ -79,6 +96,7 @@ class LambdaAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
   //Variables
   int nJets;
+  float EventWeight;
     
 };
 

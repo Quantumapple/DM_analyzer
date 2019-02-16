@@ -73,10 +73,6 @@ std::vector<reco::GenParticle> GenAnalyzer::FillGenVector(const edm::Event& iEve
 
     std::vector<reco::GenParticle> Vect;
 
-    // check if is real data
-    isRealData = iEvent.isRealData();
-    if(isRealData or PythiaLOSample) return Vect;
-    // fill collection for this event 
     iEvent.getByToken(GenParticlesToken, GenCollection);
     // Loop on Gen Particles collection
     for(std::vector<reco::GenParticle>::const_iterator it = GenCollection->begin(); it != GenCollection->end(); ++it) {
@@ -130,6 +126,17 @@ reco::Candidate* GenAnalyzer::FindGenParticle(std::vector<reco::GenParticle>& Ve
         if(Vect[i].pdgId() == pdg) return FindLastDaughter(dynamic_cast<reco::Candidate*>(&Vect[i]));
     }
     return NULL;
+}
+
+std::vector<reco::Candidate*> GenAnalyzer::FindGenParticleVector(std::vector<reco::GenParticle>& Vect, int pdg) {
+
+  std::vector<reco::Candidate*> GenVect;
+
+  for(unsigned int i = 0; i < Vect.size(); i++) {
+    if(Vect[i].pdgId() == pdg)
+      GenVect.push_back(FindLastDaughter(dynamic_cast<reco::Candidate*>(&Vect[i])));
+  }
+  return GenVect;
 }
 
 // Recursive function to find the last particle in the chain before decay: e.g. 23 -> 23 -> *23* -> 13 -13. Returns a reco Candidate

@@ -104,11 +104,19 @@ float LambdaAnalyzer::deltaPhi(float phi1, float phi2){
     return 2*3.14159265-PHI; 
 }
 
-std::vector<reco::GenParticle> LambdaAnalyzer::IndexByPt(std::vector<reco::GenParticle> vector)
+std::vector<const reco::GenParticle*> LambdaAnalyzer::IndexByPtGen(std::vector<const reco::GenParticle*> vector)
 {
-  comp comparator;
+  compgen comparatorgen;
 
-  std::sort (vector.begin() , vector.end() , comparator);
+  std::sort (vector.begin() , vector.end() , comparatorgen);
+  return vector;
+}
+
+std::vector<pat::Jet> LambdaAnalyzer::IndexByPtPat(std::vector<pat::Jet> vector)
+{
+  comppat comparatorpat;
+
+  std::sort (vector.begin() , vector.end() , comparatorpat);
   return vector;
 }
 
@@ -146,13 +154,11 @@ LambdaAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    reco::Candidate* theDM = theGenAnalyzer->FindGenParticle(GenPVect, 52);
    reco::Candidate* theZp = theGenAnalyzer->FindGenParticle(GenPVect, 55);
    reco::Candidate* thehs = theGenAnalyzer->FindGenParticle(GenPVect, 54);
-
-   std::cout<<"here 0 "<<std::endl;
    
-   Hist["g_Zpmass"]->Fill(theZp->mass(),EventWeight);
-   Hist["g_Zppt"]->Fill(theZp->pt(),EventWeight);
-   Hist["g_Zpeta"]->Fill(theZp->eta(),EventWeight);
-   Hist["g_Zpphi"]->Fill(theZp->phi(),EventWeight);
+   //Hist["g_Zpmass"]->Fill(theZp->mass(),EventWeight);
+   //Hist["g_Zppt"]->Fill(theZp->pt(),EventWeight);
+   //Hist["g_Zpeta"]->Fill(theZp->eta(),EventWeight);
+   //Hist["g_Zpphi"]->Fill(theZp->phi(),EventWeight);
 
    //Hist["g_DMmass"]->Fill(theDM->mass(),EventWeight);
    //Hist["g_DMpt"]->Fill(theDM->pt(),EventWeight);
@@ -201,44 +207,21 @@ LambdaAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    //The pruned genParticles are the ones pointed by the MC matching of the high level patObjectes (e.g. pat::Electron::genParticle()) 
    //https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2016#MC_Truth
 
-   //Matching by R may not work reliably in dense environments, such as jets. For studies needing high quality matching of reconstructed tracks with true tracks, it is possible to base the matching either on the number of hits that they share in common, or on a comparison of the 5 helix parameters describing the track. ::cout<<"here 1 "<<std::endl;
+   //Matching by R may not work reliably in dense environments, such as jets. For studies needing high quality matching of reconstructed tracks with true tracks, it is possible to base the matching either on the number of hits that they share in common, or on a comparison of the 5 helix parameters describing the track. 
 
-   std::vector<reco::GenJet> matchGenJet;
-   std::vector<int> genjetIndex;
-
-   std::cout<<"Before len(JetsVect) = "<<JetsVect.size()<<std::endl;
-   std::cout<<"Before len(GenJetsVect) = "<<GenJetsVect.size()<<std::endl;
-   std::cout<<"len(matchGenJet) = "<<matchGenJet.size()<<std::endl;
-
-   for(unsigned int i = 0; i < GenJetsVect.size(); i++){
-     for(unsigned int j = 0; j < JetsVect.size(); j++){
-       //remove unmatch recojet
-       std::cout<<"deltaR = "<<deltaR(GenJetsVect[i].phi(), GenJetsVect[i].eta(), JetsVect[j].phi(), JetsVect[j].eta())<<std::endl;
-       if (deltaR(GenJetsVect[i].phi(), GenJetsVect[i].eta(), JetsVect[j].phi(), JetsVect[j].eta()) > 0.4){
-	 JetsVect.erase(JetsVect.begin() + j);
-       }
-       else{
-	 j++;
-	 matchGenJet.push_back(GenJetsVect[i]);
-       }
-     }
-   }
-
-   std::cout<<"After len(JetsVect) = "<<JetsVect.size()<<std::endl;
-   std::cout<<"After len(GenJetsVect) = "<<GenJetsVect.size()<<std::endl;
-   std::cout<<"len(matchGenJet) = "<<matchGenJet.size()<<std::endl;
-
-   std::cout<<"here 2 "<<std::endl;
-     /*
-     //JET MC Truth
+   //JET MC Truth
    //The pruned genParticles are the ones pointed by the MC matching of the high level patObjectes (e.g. pat::Electron::genParticle()) 
-   //https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2016#MC_Truth   
+   //https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2016#MC_Truth
+
+   std::vector<const reco::GenParticle*> HardGenJetsVect;
+   std::vector<pat::Jet> HardJetsVect;
 
    for(unsigned int i = 0; i < JetsVect.size(); i++){
-     std::cout<<"jet pt = "<<JetsVect[i].pt()<<std::endl;
+     //std::cout<<"jet pt = "<<JetsVect[i].pt()<<std::endl;
      pat::Jet j = JetsVect[i];
      if (j.genParton() == NULL)
        continue;
+     /*
      std::cout<<"genParton pdgid = "<< ( j.genParton() )->pdgId() <<std::endl;
      std::cout<<"Robust Flags"<<std::endl;
      std::cout<<"isPromptFinalState() = "<< ( j.genParton() )->isPromptFinalState() <<std::endl;
@@ -250,29 +233,39 @@ LambdaAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
      std::cout<<"hadronFlavour = "<<(JetsVect[i].hadronFlavour())<<std::endl;
      std::cout<<"partonFlavour = "<<(JetsVect[i].partonFlavour())<<std::endl;
-   }
      */
 
+     if (j.genParton()->isHardProcess()){
+       HardGenJetsVect.push_back( j.genParton() );
+       HardJetsVect.push_back(j);
+     }
+   }
+   //Sort vector
+   JetsVect.clear();
+   std::vector<const reco::GenParticle*> JetsMCmatch;
+   JetsVect = IndexByPtPat(HardJetsVect);
+   JetsMCmatch = IndexByPtGen(HardGenJetsVect);
+
    //Filling
+   
    //GenJet
-   std::cout<<"here 3 "<<std::endl;
-   //Hist["g_nJet"]->Fill(matchGenJet.size(), EventWeight);
-   //for(unsigned int i = 0; i < matchGenJet.size(); i++){
-   //  Hist[("g_Jet"+std::to_string(i+1)+"pt").c_str()]->Fill(matchGenJet[i].pt(), EventWeight);
-   //  Hist[("g_Jet"+std::to_string(i+1)+"eta").c_str()]->Fill(matchGenJet[i].eta(), EventWeight);
-   // }
-   std::cout<<"here 4 "<<std::endl;
+   Hist["g_nJet"]->Fill(JetsMCmatch.size(), EventWeight);
+   for(unsigned int i = 0; i < JetsMCmatch.size(); i++){
+     if (i>2) break;
+     Hist[("g_Jet"+std::to_string(i+1)+"pt").c_str()]->Fill(JetsMCmatch[i]->pt(), EventWeight);
+     Hist[("g_Jet"+std::to_string(i+1)+"eta").c_str()]->Fill(JetsMCmatch[i]->eta(), EventWeight);
+    }
+  
    nJets=JetsVect.size();
-   //Reco
+   //RecoJet
+   Hist["r_nJet"]->Fill(nJets, EventWeight);
    for(unsigned int i = 0; i < JetsVect.size(); i++){ 
      if (i>2) break;
      Hist[("r_Jet"+std::to_string(i+1)+"pt").c_str()]->Fill(JetsVect[i].pt(), EventWeight); 
      Hist[("r_Jet"+std::to_string(i+1)+"eta").c_str()]->Fill(JetsVect[i].eta(), EventWeight); 
    }
 
-   Hist["r_nJet"]->Fill(nJets, EventWeight);
    tree->Fill();
-   std::cout<<"here 5 "<<std::endl;
 }
 
 

@@ -72,12 +72,17 @@ class LambdaAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   virtual void endJob() override;
 
   // ----------member data ---------------------------
-  std::vector<reco::GenParticle> IndexByPt(std::vector<reco::GenParticle> vector);
+  std::vector<const reco::GenParticle*> IndexByPtGen(std::vector<const reco::GenParticle*> vector);
+  std::vector<pat::Jet> IndexByPtPat(std::vector<pat::Jet> vector);
 
-  struct comp {
-    bool operator() (reco::GenParticle& i,reco::GenParticle& j) { return ( (i.pt()) > (j.pt()) ); } // sort in descending order 
+  struct compgen {
+    bool operator() (const reco::GenParticle* i,const reco::GenParticle* j) { return ( (i->pt()) > (j->pt()) ); } // sort in descending order                  
   };
-
+  
+  struct comppat {
+    bool operator() (pat::Jet& i,pat::Jet& j) { return ( (i.pt()) > (j.pt()) ); } // sort in descending order 
+  };
+  
   edm::ParameterSet GenPSet;
   edm::ParameterSet JetPSet;
   edm::ParameterSet ElectronPSet;

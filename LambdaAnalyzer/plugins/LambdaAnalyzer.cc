@@ -121,7 +121,7 @@ void
 LambdaAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
-   std::cout<<"here 0 "<<std::endl;
+ 
    //Initialize event variable
    nJets=0; EventWeight=1.;
   
@@ -147,20 +147,22 @@ LambdaAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    reco::Candidate* theZp = theGenAnalyzer->FindGenParticle(GenPVect, 55);
    reco::Candidate* thehs = theGenAnalyzer->FindGenParticle(GenPVect, 54);
 
+   std::cout<<"here 0 "<<std::endl;
+   
    Hist["g_Zpmass"]->Fill(theZp->mass(),EventWeight);
    Hist["g_Zppt"]->Fill(theZp->pt(),EventWeight);
    Hist["g_Zpeta"]->Fill(theZp->eta(),EventWeight);
    Hist["g_Zpphi"]->Fill(theZp->phi(),EventWeight);
 
-   Hist["g_DMmass"]->Fill(theDM->mass(),EventWeight);
-   Hist["g_DMpt"]->Fill(theDM->pt(),EventWeight);
-   Hist["g_DMeta"]->Fill(theDM->eta(),EventWeight);
-   Hist["g_DMphi"]->Fill(theDM->phi(),EventWeight);
+   //Hist["g_DMmass"]->Fill(theDM->mass(),EventWeight);
+   //Hist["g_DMpt"]->Fill(theDM->pt(),EventWeight);
+   //Hist["g_DMeta"]->Fill(theDM->eta(),EventWeight);
+   //Hist["g_DMphi"]->Fill(theDM->phi(),EventWeight);
 
-   Hist["g_hsmass"]->Fill(thehs->mass(),EventWeight);
-   Hist["g_hspt"]->Fill(thehs->pt(),EventWeight);
-   Hist["g_hseta"]->Fill(thehs->eta(),EventWeight);
-   Hist["g_hsphi"]->Fill(thehs->phi(),EventWeight);
+   //Hist["g_hsmass"]->Fill(thehs->mass(),EventWeight);
+   //Hist["g_hspt"]->Fill(thehs->pt(),EventWeight);
+   //Hist["g_hseta"]->Fill(thehs->eta(),EventWeight);
+   //Hist["g_hsphi"]->Fill(thehs->phi(),EventWeight);
    
    /*
    //std::vector<reco::Candidate*> theDM = theGenAnalyzer->FindGenParticleVector(GenPVect, 52);
@@ -198,25 +200,34 @@ LambdaAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    //JET MC Truth
    //The pruned genParticles are the ones pointed by the MC matching of the high level patObjectes (e.g. pat::Electron::genParticle()) 
    //https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2016#MC_Truth
-   std::cout<<"here 1 "<<std::endl;
+
+   //Matching by R may not work reliably in dense environments, such as jets. For studies needing high quality matching of reconstructed tracks with true tracks, it is possible to base the matching either on the number of hits that they share in common, or on a comparison of the 5 helix parameters describing the track. ::cout<<"here 1 "<<std::endl;
+
    std::vector<reco::GenJet> matchGenJet;
-   unsigned int z=0;
+   std::vector<int> genjetIndex;
+
+   std::cout<<"Before len(JetsVect) = "<<JetsVect.size()<<std::endl;
+   std::cout<<"Before len(GenJetsVect) = "<<GenJetsVect.size()<<std::endl;
+   std::cout<<"len(matchGenJet) = "<<matchGenJet.size()<<std::endl;
+
    for(unsigned int i = 0; i < GenJetsVect.size(); i++){
-     if (GenJetsVect[i].pt() < 20) continue;
-     matchGenJet.push_back(GenJetsVect[i]);
      for(unsigned int j = 0; j < JetsVect.size(); j++){
-       if (JetsVect[j].pt() < 20) continue;
-       //remove unmatch constituent
+       //remove unmatch recojet
+       std::cout<<"deltaR = "<<deltaR(GenJetsVect[i].phi(), GenJetsVect[i].eta(), JetsVect[j].phi(), JetsVect[j].eta())<<std::endl;
        if (deltaR(GenJetsVect[i].phi(), GenJetsVect[i].eta(), JetsVect[j].phi(), JetsVect[j].eta()) > 0.4){
 	 JetsVect.erase(JetsVect.begin() + j);
-	 matchGenJet.erase(GenJetsVect.begin() + z);
        }
        else{
 	 j++;
+	 matchGenJet.push_back(GenJetsVect[i]);
        }
      }
-     z+=1;
    }
+
+   std::cout<<"After len(JetsVect) = "<<JetsVect.size()<<std::endl;
+   std::cout<<"After len(GenJetsVect) = "<<GenJetsVect.size()<<std::endl;
+   std::cout<<"len(matchGenJet) = "<<matchGenJet.size()<<std::endl;
+
    std::cout<<"here 2 "<<std::endl;
      /*
      //JET MC Truth
@@ -245,15 +256,21 @@ LambdaAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    //Filling
    //GenJet
    std::cout<<"here 3 "<<std::endl;
-   Hist["g_nJet"]->Fill(matchGenJet.size(), EventWeight);
-   for(unsigned int i = 0; i < matchGenJet.size(); i++){
-     Hist[("g_Jet"+std::to_string(i+1)+"pt").c_str()]->Fill(matchGenJet[i].pt(), EventWeight);
-     Hist[("g_Jet"+std::to_string(i+1)+"eta").c_str()]->Fill(matchGenJet[i].eta(), EventWeight);
-   }
+   //Hist["g_nJet"]->Fill(matchGenJet.size(), EventWeight);
+   //for(unsigned int i = 0; i < matchGenJet.size(); i++){
+   //  Hist[("g_Jet"+std::to_string(i+1)+"pt").c_str()]->Fill(matchGenJet[i].pt(), EventWeight);
+   //  Hist[("g_Jet"+std::to_string(i+1)+"eta").c_str()]->Fill(matchGenJet[i].eta(), EventWeight);
+   // }
    std::cout<<"here 4 "<<std::endl;
    nJets=JetsVect.size();
+   //Reco
+   for(unsigned int i = 0; i < JetsVect.size(); i++){ 
+     if (i>2) break;
+     Hist[("r_Jet"+std::to_string(i+1)+"pt").c_str()]->Fill(JetsVect[i].pt(), EventWeight); 
+     Hist[("r_Jet"+std::to_string(i+1)+"eta").c_str()]->Fill(JetsVect[i].eta(), EventWeight); 
+   }
+
    Hist["r_nJet"]->Fill(nJets, EventWeight);
-   
    tree->Fill();
    std::cout<<"here 5 "<<std::endl;
 }

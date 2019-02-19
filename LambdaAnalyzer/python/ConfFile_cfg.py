@@ -2,7 +2,8 @@ import os
 import FWCore.ParameterSet.Config as cms
 import FWCore.Utilities.FileUtils as FileUtils
 #mylist = FileUtils.loadListFromFile('axial_samplelist.txt')
-mylist = FileUtils.loadListFromFile('darkHiggsMonoJ_samplelist.txt')
+mylist = FileUtils.loadListFromFile('vector_samplelist.txt')
+#mylist = FileUtils.loadListFromFile('darkHiggsMonoJ_samplelist.txt')
 
 process = cms.Process("lambda")
 
@@ -52,7 +53,8 @@ process.lamb = cms.EDAnalyzer("LambdaAnalyzer",
 process.TFileService = cms.Service("TFileService",
                                     #fileName = cms.string("histo.root"),
                                     #fileName = cms.string("AxialMonoJ_histo.root"),
-                                    fileName = cms.string("DarkHiggs_histo.root"),
+                                    fileName = cms.string("VectorMonoJ_histo.root"),
+                                    #fileName = cms.string("DarkHiggs_histo.root"),
                                     closeFileFast = cms.untracked.bool(True)
                                     )
 

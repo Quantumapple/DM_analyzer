@@ -25,6 +25,9 @@ g_JetP2pt                ;Gen~p_{T}^{j2~parton}~[GeV]              500     0  50
 g_JetP2eta               ;Gen~j2~parton~#eta                       100    -3     3   Lin
 g_JetP3pt                ;Gen~p_{T}^{j3~parton}~[GeV]              500     0  5000   Lin
 g_JetP3eta               ;Gen~j3~parton~#eta                       100    -3     3   Lin
+g_J1J2dPhi               ;#Delta~#phi_{Gen~j1,~Gen~j2}             100     0  3.15   Lin
+g_J1J2dEta               ;#Delta~#eta_{Gen~j1,~Gen~j2}             100    -5     5   Lin
+g_J1J2dR                 ;#Delta~R_{Gen~j1,~Gen~j2}                100     0     5   Lin
 r_nJet                   ;Number~of~Reco~Jets                        6  -0.5   5.5   Log
 r_Jet1pt                 ;Reco~p_{T}^{j1}~[GeV]                    100     0  1000   Lin
 r_Jet1eta                ;Reco~j1~#eta                             100    -5     5   Lin
@@ -33,3 +36,7 @@ r_Jet2eta                ;Reco~j2~#eta                             100    -5    
 r_Jet3pt                 ;Reco~p_{T}^{j3}~[GeV]                    100     0   500   Lin
 r_Jet3eta                ;Reco~j3~#eta                             100    -5     5   Lin
 r_dPhi                   ;#Delta~#phi_{Reco~j1,~MET}               100     0  3.15   Lin
+r_dR                     ;#Delta~R_{Reco~j1,~MET}                  100     0     5   Lin
+r_J1J2dPhi               ;#Delta~#phi_{Reco~j1,~Reco~j2}           100     0  3.15   Lin
+r_J1J2dEta               ;#Delta~#eta_{Reco~j1,~Reco~j2}           100    -5     5   Lin
+r_J1J2dR                 ;#Delta~R_{Reco~j1,~Reco~j2}              100     0     5   Lin

@@ -103,7 +103,9 @@ class LambdaAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   int nJets;
   float EventWeight;
   float METphi;
+  float METeta;
   float RecoJphi;
+  float RecoJeta;
     
 };
 

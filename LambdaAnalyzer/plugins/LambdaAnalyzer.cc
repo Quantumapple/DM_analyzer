@@ -52,7 +52,8 @@ LambdaAnalyzer::LambdaAnalyzer(const edm::ParameterSet& iConfig):
    TFileDirectory recoDir=fs->mkdir("Reco/");
    
    //make TH1F
-   std::vector<std::string> nLabels={"All", "Trigger", "Iso Lep #geq 2", "Z cand ", "Jets #geq 2", "Z mass ", "h mass ", "Top veto", "bJets #geq 1", "bJets #geq 2"};
+   //std::vector<std::string> nLabels={"All", "Trigger", "Iso Lep #geq 2", "Z cand ", "Jets #geq 2", "Z mass ", "h mass ", "Top veto", "bJets #geq 1", "bJets #geq 2"};
+   std::vector<std::string> nLabels={"All", "MET > 200", "MET > 250", "Z cand ", "Jets #geq 2", "Z mass ", "h mass ", "Top veto", "bJets #geq 1", "bJets #geq 2"};
 
    int nbins;
    float min, max;
@@ -211,11 +212,13 @@ LambdaAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    Hist["a_met"]->Fill(MET.pt(), EventWeight);
    // Save MET phi
    METphi = MET.phi();
+   METeta = MET.eta();
    //std::cout << "MET filled" << std::endl;
    //std::cout << std::endl;
    
    // Fill number of events when MET > 200 GeV
    if ( MET.pt() > 200. ) Hist["a_nEvents"]->Fill(2.,EventWeight);
+   if ( MET.pt() > 250. ) Hist["a_nEvents"]->Fill(3.,EventWeight);
 
    //JET MC Truth
    //The pruned genParticles are the ones pointed by the MC matching of the high level patObjectes (e.g. pat::Electron::genParticle()) 
@@ -266,6 +269,12 @@ LambdaAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      if (i>2) break;
      Hist[("g_Jet"+std::to_string(i+1)+"pt").c_str()]->Fill(JetsMCmatch[i]->pt(), EventWeight);
      Hist[("g_Jet"+std::to_string(i+1)+"eta").c_str()]->Fill(JetsMCmatch[i]->eta(), EventWeight);
+     if (JetsMCmatch.size() >= 2 )
+     {
+         Hist["g_J1J2dPhi"]->Fill(deltaPhi(JetsMCmatch[0]->phi(), JetsMCmatch[1]->phi()), EventWeight);
+         Hist["g_J1J2dEta"]->Fill(JetsMCmatch[0]->eta() - JetsMCmatch[1]->eta(), EventWeight);
+         Hist["g_J1J2dR"]->Fill(deltaR(JetsMCmatch[0]->phi(), JetsMCmatch[0]->eta(), JetsMCmatch[1]->phi(), JetsMCmatch[1]->eta()), EventWeight);
+     }
     }
    
    //std::cout << "Genjet finished" << std::endl;
@@ -279,12 +288,20 @@ LambdaAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      Hist[("r_Jet"+std::to_string(i+1)+"pt").c_str()]->Fill(JetsVect[i].pt(), EventWeight); 
      Hist[("r_Jet"+std::to_string(i+1)+"eta").c_str()]->Fill(JetsVect[i].eta(), EventWeight); 
      RecoJphi = JetsVect[0].phi();
+     RecoJeta = JetsVect[0].eta();
+     if (JetsVect.size() >= 2 )
+     {
+         Hist["r_J1J2dPhi"]->Fill(deltaPhi(JetsVect[0].phi(), JetsVect[1].phi()), EventWeight);
+         Hist["r_J1J2dEta"]->Fill(JetsVect[0].eta() - JetsVect[1].eta(), EventWeight);
+         Hist["r_J1J2dR"]->Fill(deltaR(JetsVect[0].phi(), JetsVect[0].eta(), JetsVect[1].phi(), JetsVect[1].eta()), EventWeight);
+     }
    }
    //std::cout << "Recojet finished" << std::endl;
    //std::cout << std::endl;
 
    // Calculate angle difference (delta phi) of MET and 
-   Hist["r_dPhi"]->Fill(deltaPhi(RecoJphi, METphi),EventWeight);
+   Hist["r_dPhi"]->Fill(deltaPhi(RecoJphi, METphi), EventWeight);
+   Hist["r_dR"]->Fill(deltaR(METphi, METeta, RecoJphi, RecoJeta), EventWeight);
 
    tree->Fill();
    

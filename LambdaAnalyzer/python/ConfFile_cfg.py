@@ -4,6 +4,8 @@ import FWCore.Utilities.FileUtils as FileUtils
 #mylist = FileUtils.loadListFromFile('axial_samplelist.txt')
 mylist = FileUtils.loadListFromFile('vector_samplelist.txt')
 #mylist = FileUtils.loadListFromFile('darkHiggsMonoJ_samplelist.txt')
+#mylist = FileUtils.loadListFromFile('dHlist.txt')
+#mylist = FileUtils.loadListFromFile('Q90.txt')
 
 process = cms.Process("lambda")
 
@@ -55,6 +57,8 @@ process.TFileService = cms.Service("TFileService",
                                     #fileName = cms.string("AxialMonoJ_histo.root"),
                                     fileName = cms.string("VectorMonoJ_histo.root"),
                                     #fileName = cms.string("DarkHiggs_histo.root"),
+                                    #fileName = cms.string("DarkHiggs_kThisto.root"),
+                                    #fileName = cms.string("DH_XQ20_Q90.root"),
                                     closeFileFast = cms.untracked.bool(True)
                                     )
 

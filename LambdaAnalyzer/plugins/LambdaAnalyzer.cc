@@ -200,8 +200,8 @@ LambdaAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    // Jet
    std::vector<pat::Jet> JetsVect = theJetAnalyzer->FillJetVector(iEvent);
-   theJetAnalyzer->CleanJetsFromMuons(JetsVect, MuonVect, 0.4);
-   theJetAnalyzer->CleanJetsFromElectrons(JetsVect, ElecVect, 0.4);
+   //theJetAnalyzer->CleanJetsFromMuons(JetsVect, MuonVect, 0.4);
+   //theJetAnalyzer->CleanJetsFromElectrons(JetsVect, ElecVect, 0.4);
 
    // GenJet
    std::vector<reco::GenJet> GenJetsVect = theJetAnalyzer->FillGenJetVector(iEvent);

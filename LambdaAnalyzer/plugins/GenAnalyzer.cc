@@ -87,6 +87,19 @@ std::vector<reco::GenParticle> GenAnalyzer::FillGenVector(const edm::Event& iEve
     return Vect;
 }
 
+std::vector<reco::GenParticle> GenAnalyzer::SelectGenVector(std::vector<reco::GenParticle>& Vect, int pdg) {
+
+    std::vector<reco::GenParticle> GenVector;
+    
+    //for(unsigned int i = 0; i < Vect.size(); i++) {
+    for(std::vector<reco::GenParticle>::const_iterator it = Vect.begin(); it != Vect.end(); ++it) {
+        //std::cout << Vect[i].pdgId() << std::endl;
+        if(abs(it->pdgId()) == pdg) GenVector.push_back(*it);
+    }
+
+    return GenVector;	
+}
+
 std::map<std::string, float> GenAnalyzer::FillLheMap(const edm::Event& iEvent) {
     std::map<std::string, float> Var;
     if(iEvent.isRealData() or PythiaLOSample) return Var;

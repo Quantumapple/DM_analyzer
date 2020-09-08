@@ -53,7 +53,8 @@ LambdaAnalyzer::LambdaAnalyzer(const edm::ParameterSet& iConfig):
    
    //make TH1F
    //std::vector<std::string> nLabels={"All", "Trigger", "Iso Lep #geq 2", "Z cand ", "Jets #geq 2", "Z mass ", "h mass ", "Top veto", "bJets #geq 1", "bJets #geq 2"};
-   std::vector<std::string> nLabels={"All", "MET > 200", "MET > 250", "Z cand ", "Jets #geq 2", "Z mass ", "h mass ", "Top veto", "bJets #geq 1", "bJets #geq 2"};
+   //std::vector<std::string> nLabels={"All", "MET > 200", "MET > 250", "Z cand ", "Jets #geq 2", "Z mass ", "h mass ", "Top veto", "bJets #geq 1", "bJets #geq 2"};
+   std::vector<std::string> nLabels={"All", "MET > 200", "MET > 250", "Z' p_{T} > 250", "Jets #geq 2", "Z mass ", "h mass ", "Top veto", "bJets #geq 1", "bJets #geq 2"};
 
    int nbins;
    float min, max;
@@ -151,47 +152,60 @@ LambdaAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    std::vector<reco::GenParticle> GenPVect = theGenAnalyzer->FillGenVector(iEvent);
 
    // Gen candidates
-   //reco::Candidate* theGenZ = theGenAnalyzer->FindGenParticle(GenPVect, 23);
-   //reco::Candidate* theGenW = theGenAnalyzer->FindGenParticle(GenPVect, 24);
-   //reco::Candidate* theGenTop     = theGenAnalyzer->FindGenParticle(GenPVect, 6);
-   //reco::Candidate* theGenAntiTop = theGenAnalyzer->FindGenParticle(GenPVect, -6);
-
-   //reco::Candidate* theDM = theGenAnalyzer->FindGenParticle(GenPVect, 52);
-   //reco::Candidate* theZp = theGenAnalyzer->FindGenParticle(GenPVect, 55);
-   //reco::Candidate* thehs = theGenAnalyzer->FindGenParticle(GenPVect, 54);
-   
-   //Hist["g_Zpmass"]->Fill(theZp->mass(),EventWeight);
-   //Hist["g_Zppt"]->Fill(theZp->pt(),EventWeight);
-   //Hist["g_Zpeta"]->Fill(theZp->eta(),EventWeight);
-   //Hist["g_Zpphi"]->Fill(theZp->phi(),EventWeight);
-
-   //Hist["g_DMmass"]->Fill(theDM->mass(),EventWeight);
-   //Hist["g_DMpt"]->Fill(theDM->pt(),EventWeight);
-   //Hist["g_DMeta"]->Fill(theDM->eta(),EventWeight);
-   //Hist["g_DMphi"]->Fill(theDM->phi(),EventWeight);
-
-   //Hist["g_hsmass"]->Fill(thehs->mass(),EventWeight);
-   //Hist["g_hspt"]->Fill(thehs->pt(),EventWeight);
-   //Hist["g_hseta"]->Fill(thehs->eta(),EventWeight);
-   //Hist["g_hsphi"]->Fill(thehs->phi(),EventWeight);
-   
-   /*
-   //std::vector<reco::Candidate*> theDM = theGenAnalyzer->FindGenParticleVector(GenPVect, 52);
-   //std::vector<reco::Candidate*> theZp = theGenAnalyzer->FindGenParticleVector(GenPVect, 55);
-   //std::vector<reco::Candidate*> thehs = theGenAnalyzer->FindGenParticleVector(GenPVect, 54);
-
-   std::vector<int> LepIds = {11,13,15,-11,-13,-15};
-   std::vector<int> NeuIds = {12,14,16,-12,-14,-16};
-   std::vector<int> HadIds = {1,2,3,4,5,-1,-2,-3,-4,-5};
-
-   reco::GenParticle* theGenLep = theGenAnalyzer->FindGenParticleGenByIds(GenPVect, LepIds);
-   reco::GenParticle* theGenNeu = theGenAnalyzer->FindGenParticleGenByIds(GenPVect, NeuIds);
-   reco::GenParticle* theGenHad = theGenAnalyzer->FindGenParticleGenByIds(GenPVect, HadIds);
-   */
-
-   //std::cout << "Call candidates" << std::endl;
+   //for(unsigned int i = 0; i < GenPVect.size(); i++)
+   //{
+   //    if(GenPVect[i].pdgId() > 50 ) std::cout << "Pdg ID: " << GenPVect[i].pdgId() << std::endl;
+   //}
    //std::cout << std::endl;
 
+   std::vector<reco::GenParticle> theDM = theGenAnalyzer->SelectGenVector(GenPVect, 52);
+   std::vector<reco::GenParticle> thehs = theGenAnalyzer->SelectGenVector(GenPVect, 54);
+   std::vector<reco::GenParticle> theZp = theGenAnalyzer->SelectGenVector(GenPVect, 55);
+   //std::vector<reco::GenParticle> theGenW = theGenAnalyzer->SelectGenVector(GenPVect, 24);
+   //std::vector<reco::GenParticle> theGenZ = theGenAnalyzer->SelectGenVector(GenPVect, 23);
+   
+   /*
+   float Zp1pt = 0.;
+   if( theZp.size() != 0 ) { 
+       Zp1pt = theZp[0].pt();
+       //Hist["g_Zpmass"]->Fill(theZp[0].mass(), EventWeight);
+   }
+   if( Zp1pt > 250. ) 
+   {
+       Hist["a_nEvents"]->Fill(4.,EventWeight);
+       //Hist["g_hsmass"]->Fill(thehs[0].mass(), EventWeight);
+       //Hist["g_hspt"]->Fill(thehs[0].pt(), EventWeight);
+       //Hist["g_WPt"]->Fill(theGenW[0].pt());
+       //Hist["g_ZPt"]->Fill(theGenZ[0].pt());
+   }
+   */
+
+   //std::cout << theZp.size() << ", " << thehs.size() << ", " << theDM.size() << std::endl;
+   if( theZp.size() > 0 && thehs.size() > 0 && theDM.size() > 0 ) std::cout << theZp[0].mass() << ", " << thehs[0].mass() << ", " << theDM[0].mass() << std::endl;
+   //if( theZp.size() > 0 ) std::cout << theZp[0].mass() << std::endl;
+   //if( thehs.size() > 0 ) std::cout << thehs[0].mass() << std::endl;
+   //if( theDM.size() > 0 ) std::cout << theDM[0].mass() << std::endl;
+   
+   //for(unsigned int i = 0; i < theZp.size(); i++)
+   //{
+   //    if(thehs[0].mass() != 70) continue;
+   //    Hist["g_Zpmass"]->Fill(theZp[0].mass(), EventWeight);
+   //}
+
+
+   //for(unsigned int i = 0; i < thehs.size(); i++)
+   //{
+   //    if(thehs[0].mass() != 70) continue;
+   //    Hist["g_hsmass"]->Fill(thehs[0].mass(),EventWeight);
+   //}
+   //
+   //for(unsigned int i = 0; i < theDM.size(); i++)
+   //{
+   //    if(thehs[0].mass() != 70) continue;
+   //    Hist["g_DMmass"]->Fill(theDM[0].mass(),EventWeight);
+   //    //Hist["g_DMmass"]->Fill(theDM[1].mass(),EventWeight);
+   //}
+   
    // Electron
    std::vector<pat::Electron> ElecVect = theElectronAnalyzer->FillElectronVector(iEvent);
 
@@ -210,6 +224,7 @@ LambdaAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    //MET
    pat::MET MET = theJetAnalyzer->FillMetVector(iEvent);   
    
+   /*
    Hist["a_met"]->Fill(MET.pt(), EventWeight);
    // Save MET phi
    METphi = MET.phi();
@@ -235,19 +250,19 @@ LambdaAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      pat::Jet j = JetsVect[i];
      if (j.genParton() == NULL)
        continue;
-     /*
-     std::cout<<"genParton pdgid = "<< ( j.genParton() )->pdgId() <<std::endl;
-     std::cout<<"Robust Flags"<<std::endl;
-     std::cout<<"isPromptFinalState() = "<< ( j.genParton() )->isPromptFinalState() <<std::endl;
-     std::cout<<"Less robust Flags"<<std::endl;
-     std::cout<<"isHardProcess() = "<< ( j.genParton() )->isHardProcess() <<std::endl;
-     std::cout<<"fromHardProcessFinalState() = "<< ( j.genParton() )->fromHardProcessFinalState() <<std::endl;
-     std::cout<<"fromHardProcessDecayed() = "<< ( j.genParton() )->fromHardProcessDecayed() <<std::endl;
-     std::cout<<"isLastCopy() = "<< ( j.genParton() )->isLastCopy() <<std::endl;
+     
+     //std::cout<<"genParton pdgid = "<< ( j.genParton() )->pdgId() <<std::endl;
+     //std::cout<<"Robust Flags"<<std::endl;
+     //std::cout<<"isPromptFinalState() = "<< ( j.genParton() )->isPromptFinalState() <<std::endl;
+     //std::cout<<"Less robust Flags"<<std::endl;
+     //std::cout<<"isHardProcess() = "<< ( j.genParton() )->isHardProcess() <<std::endl;
+     //std::cout<<"fromHardProcessFinalState() = "<< ( j.genParton() )->fromHardProcessFinalState() <<std::endl;
+     //std::cout<<"fromHardProcessDecayed() = "<< ( j.genParton() )->fromHardProcessDecayed() <<std::endl;
+     //std::cout<<"isLastCopy() = "<< ( j.genParton() )->isLastCopy() <<std::endl;
 
-     std::cout<<"hadronFlavour = "<<(JetsVect[i].hadronFlavour())<<std::endl;
-     std::cout<<"partonFlavour = "<<(JetsVect[i].partonFlavour())<<std::endl;
-     */
+     //std::cout<<"hadronFlavour = "<<(JetsVect[i].hadronFlavour())<<std::endl;
+     //std::cout<<"partonFlavour = "<<(JetsVect[i].partonFlavour())<<std::endl;
+     
 
      if (j.genParton()->isHardProcess()){
        HardGenJetsVect.push_back( j.genParton() );
@@ -255,39 +270,54 @@ LambdaAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      }
    }
 
-   std::cout << "Before Sorting" << std::endl; 
-   std::cout<<"Total number of match reco jet = "<< HardJetsVect.size() <<std::endl;
+   //std::cout << "Before Sorting" << std::endl; 
+   //std::cout<<"Total number of match reco jet = "<< HardJetsVect.size() <<std::endl;
    for(unsigned int i = 0; i < HardJetsVect.size(); i++){
      pat::Jet j = HardJetsVect[i];
-     std::cout<<"Jet number "<<i<<" with j.pt() = "<<j.pt()<<std::endl;
+     //std::cout<<"Jet number "<<i<<" with j.pt() = "<<j.pt()<<std::endl;
    }
    //Sort vector
    JetsVect.clear();
    std::vector<const reco::GenParticle*> JetsMCmatch;
    JetsVect = IndexByPtPat(HardJetsVect);
    JetsMCmatch = IndexByPtGen(HardGenJetsVect);
-   std::cout << "After Sorting" << std::endl;
-   std::cout<<"Total number of match reco jet = "<< JetsVect.size() <<std::endl;
+   //std::cout << "After Sorting" << std::endl;
+   //std::cout<<"Total number of match reco jet = "<< JetsVect.size() <<std::endl;
    for(unsigned int i = 0; i < JetsVect.size(); i++){
      pat::Jet j = JetsVect[i];
-     std::cout<<"Jet number "<<i<<" with j.pt() = "<<j.pt()<<std::endl;
+     //std::cout<<"Jet number "<<i<<" with j.pt() = "<<j.pt()<<std::endl;
    }
 
+   //TLorentzVector v1;
+   //TLorentzVector v2;
+   //TLorentzVector v3;
+
    //Filling
-   
+  
    //GenJet
+   //if( Zp1pt > 250. ) Hist["g_nJet"]->Fill(JetsMCmatch.size(), EventWeight);
    Hist["g_nJet"]->Fill(JetsMCmatch.size(), EventWeight);
    for(unsigned int i = 0; i < JetsMCmatch.size(); i++){
      if (i>2) break;
+     //if( Zp1pt >  250. ) Hist[("g_Jet"+std::to_string(i+1)+"pt").c_str()]->Fill(JetsMCmatch[i]->pt(), EventWeight);
+     //if( Zp1pt >  250. ) Hist[("g_Jet"+std::to_string(i+1)+"eta").c_str()]->Fill(JetsMCmatch[i]->eta(), EventWeight);
      Hist[("g_Jet"+std::to_string(i+1)+"pt").c_str()]->Fill(JetsMCmatch[i]->pt(), EventWeight);
      Hist[("g_Jet"+std::to_string(i+1)+"eta").c_str()]->Fill(JetsMCmatch[i]->eta(), EventWeight);
      if (JetsMCmatch.size() >= 2 )
      {
+         //v1.SetPtEtaPhiE(JetsMCmatch[0]->pt(), JetsMCmatch[0]->eta(), JetsMCmatch[0]->phi(). JetsMCmatch[0]->energy());
+         //v2.SetPtEtaPhiE(JetsMCmatch[1]->pt(), JetsMCmatch[1]->eta(), JetsMCmatch[1]->phi(). JetsMCmatch[1]->energy());
          Hist["g_J1J2dPhi"]->Fill(deltaPhi(JetsMCmatch[0]->phi(), JetsMCmatch[1]->phi()), EventWeight);
          Hist["g_J1J2dEta"]->Fill(JetsMCmatch[0]->eta() - JetsMCmatch[1]->eta(), EventWeight);
          Hist["g_J1J2dR"]->Fill(deltaR(JetsMCmatch[0]->phi(), JetsMCmatch[0]->eta(), JetsMCmatch[1]->phi(), JetsMCmatch[1]->eta()), EventWeight);
+         //if( Zp1pt > 250. ) Hist["g_J1J2dPhi"]->Fill(deltaPhi(JetsMCmatch[0]->phi(), JetsMCmatch[1]->phi()), EventWeight);
+         //if( Zp1pt > 250. ) Hist["g_J1J2dEta"]->Fill(JetsMCmatch[0]->eta() - JetsMCmatch[1]->eta(), EventWeight);
+         //if( Zp1pt > 250. ) Hist["g_J1J2dR"]->Fill(deltaR(JetsMCmatch[0]->phi(), JetsMCmatch[0]->eta(), JetsMCmatch[1]->phi(), JetsMCmatch[1]->eta()), EventWeight);
      }
     }
+
+   //v3 = v1 + v2;
+   //if( Zp1pt > 250. ) Hist["g_dijetM"]->Fill(v3.M());
    
    //std::cout << "Genjet finished" << std::endl;
    //std::cout << std::endl;
@@ -313,7 +343,9 @@ LambdaAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    // Calculate angle difference (delta phi) of MET and 
    Hist["r_dPhi"]->Fill(deltaPhi(RecoJphi, METphi), EventWeight);
+   Hist["r_dEta"]->Fill(RecoJeta - METeta, EventWeight);
    Hist["r_dR"]->Fill(deltaR(METphi, METeta, RecoJphi, RecoJeta), EventWeight);
+   */
 
    tree->Fill();
    
